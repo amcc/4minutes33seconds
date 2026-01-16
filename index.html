@@ -1,10 +1,59 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    <title>4 Minutes 33 Seconds</title>
+    <meta
+      name="description"
+      content="4 Minutes 33 Seconds - John Cage reimagined"
+    />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/addons/p5.sound.min.js"></script>
     <link rel="stylesheet" type="text/css" href="style.css" />
     <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=yes"
+    />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="theme-color" content="#000000" />
+
+    <!-- Web App Manifest -->
+    <link rel="manifest" href="/4minutes33seconds/site.webmanifest" />
+
+    <!-- Apple Icons -->
+    <link
+      rel="apple-touch-icon"
+      href="/4minutes33seconds/icons/icon-192x192.png"
+    />
+
+    <!-- Standard Favicon -->
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="/4minutes33seconds/icons/favicon-32x32.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="16x16"
+      href="/4minutes33seconds/icons/favicon-16x16.png"
+    />
+
+    <!-- Android Chrome Icons (from manifest) -->
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="192x192"
+      href="/4minutes33seconds/icons/icon-192x192.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="512x512"
+      href="/4minutes33seconds/icons/icon-512x512.png"
+    />
+
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -13,7 +62,14 @@
     />
   </head>
   <body>
-    <main></main>
+    <main>
+      <aside>
+        <div class="controls">
+          <button id="download" onclick="download()">Download</button>
+          <button id="reset" onclick="reset()">Reset</button>
+        </div>
+      </aside>
+    </main>
     <script src="sketch.js"></script>
   </body>
 </html>

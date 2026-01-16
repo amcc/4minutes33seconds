@@ -1,7 +1,44 @@
-html, body {
+html,
+body {
   margin: 0;
   padding: 0;
 }
 canvas {
   display: block;
+}
+
+body,
+button {
+  font-family: "Space Mono", sans-serif;
+}
+
+button {
+  background: #000;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  padding: 10px 15px;
+  font-size: 16px;
+  cursor: pointer;
+
+  &:hover {
+    background: #ff0000;
+  }
+}
+
+aside {
+  position: fixed;
+  /* pointer-events: none; */
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  z-index: 10;
+}
+
+.controls {
+  display: none;
+  margin: 20px;
 }

@@ -5,9 +5,16 @@ let state = 0;
 let timer = 0;
 let startTime = 0;
 
-let darkColour = 230
+let darkColour = 200;
+let redColour = [255, 0, 0];
 
-let cageLength = 4*60+33
+let cageLength = 4 * 60 + 33;
+let playHead = 0;
+let playing = false;
+let soundArray = [];
+let soundArrayCalculated = false;
+let controls;
+let playArray = [];
 
 function setup() {
   let cnv = createCanvas(windowWidth, windowHeight);
@@ -30,88 +37,164 @@ function setup() {
   // this sound file will be used to
   // playback & save the recording
   soundFile = new p5.SoundFile();
-  textFont("Space Mono")
+  textFont("Space Mono");
+
+  // setup html
+  controls = select(".controls");
 }
 
 function draw() {
   background(255);
   if (state === 0) {
     textSize(height / 7);
+    noStroke();
     text(getTime(), width / 2, height / 2);
   } else if (state === 1) {
-    fill(255, 0, 0);
+    visualiseSound();
+    noStroke();
+    fill(redColour);
     textSize(height / 7);
     text(getTime(), width / 2, height / 2);
 
     timer = millis() - startTime;
-    
-    visualiseSound()
+
     // getTime();
   } else if (state === 2) {
-    fill(50)
-    textSize(height / 7);
-    text(formatTime(timer/1000), width / 2, height / 2);
+    if (soundFile.buffer && !soundArrayCalculated) {
+      soundArray = soundFile.getPeaks(width / 2);
+      soundArrayCalculated = true;
+    }
     if (soundFile.buffer) {
       drawSound();
+      // Draw all active playheads
+      for (let i = 0; i < playArray.length; i++) {
+        if (playArray[i].playing) {
+          drawPlayhead(playArray[i]);
+        }
+      }
     }
+    noStroke();
+    fill(50);
+    textSize(height / 7);
+    text(formatTime(timer / 1000), width / 2, height / 2);
   }
-  
 }
 
 function canvasPressed() {
   // ensure audio is enabled
   userStartAudio();
+  playHead = 0;
 
   // make sure user enabled the mic
   if (state === 0 && mic.enabled) {
     // record to our p5.SoundFile
     timer = 0;
+    playHead = 0;
+    playing = false;
+    soundArray = [];
+    soundArrayCalculated = false;
     startTime = millis();
-    recorder.record(soundFile);
+    recordSound();
+    controls.style("display", "none");
     state++;
   } else if (state === 1) {
     // stop recorder and
     // send result to soundFile
     recorder.stop();
+    soundArrayCalculated = false;
+    controls.style("display", "block");
 
     state++;
   } else if (state === 2) {
+    playArray.push({
+      playing: true,
+      playHead: 0,
+      startTime: millis(),
+    });
     soundFile.play(); // play the result!
-    // save(soundFile, 'mySound.wav');
+    // save(soundFile, "mySound.wav");
     // state++;
   }
 }
 
+function recordSound() {
+  setTimeout(() => {
+    recorder.record(soundFile);
+  }, 250);
+}
+
 function visualiseSound() {
-  let vol = mic.getLevel() * height * 4
-  noStroke()
-  fill(darkColour)
+  let vol = mic.getLevel() * height * 4;
+  noStroke();
+  fill(darkColour);
   // strokeWeight(10)
   // stroke(darkColour)
   // line(0, height-vol, width, height-vol)
-  rect(0, height-vol, width, vol)
+  rect(0, height - vol, width, vol);
 }
 
 function drawSound() {
-  const array = soundFile.getPeaks(500);
-  // console.log(array);
-  
-  stroke(darkColour)
+  const step = width / soundArray.length;
 
-  for (let i = 0; i < array.length; i++) {
-    let peak = map(array[i], 0, 0.3, 0, height);
-    line(i, height, i, height - peak);
+  stroke(darkColour);
+  strokeWeight(1);
+
+  for (let i = 0; i < soundArray.length; i++) {
+    let peak = map(soundArray[i], 0, 0.3, 0, height);
+    line(i * step, height, i * step, height - peak);
   }
+}
+
+function drawPlayhead(playheadObj) {
+  // Calculate elapsed time since this playback started
+  const elapsedTime = (millis() - playheadObj.startTime) / 1000;
+  const duration = soundFile.duration();
+  const playbackProgress = elapsedTime / duration;
+
+  // Map that to the canvas width
+  playheadObj.playHead = ceil(playbackProgress * width);
+
+  if (playheadObj.playHead >= width) {
+    playheadObj.playing = false;
+    return;
+  }
+
+  strokeWeight(1);
+  stroke(redColour);
+  line(playheadObj.playHead, 0, playheadObj.playHead, height);
 }
 
 function getTime(total = cageLength) {
   const secondsElapsed = floor(timer / 1000);
   const remainingSeconds = total - secondsElapsed;
-  return formatTime(remainingSeconds)
+  return formatTime(remainingSeconds);
 }
 
-function formatTime(seconds){
+function download() {
+  if (soundFile.buffer) {
+    save(soundFile, formatTime(timer / 1000) + ".wav");
+  }
+}
+
+function reset() {
+  state = 0;
+  timer = 0;
+  playHead = 0;
+  playing = false;
+  soundArray = [];
+  soundArrayCalculated = false;
+  startTime = millis();
+  recordSound();
+  controls.style("display", "none");
+  soundFile.stop();
+}
+
+function formatTime(seconds) {
   const mins = floor(seconds / 60);
   const sec = floor(seconds - mins * 60);
-  return mins + "′" + sec + '″';
+  return mins + "′" + sec + "″";
+}
+
+function windowResized() {
+  resizeCanvas(windowWidth, windowHeight);
 }
