@@ -176,6 +176,16 @@ function download() {
   }
 }
 
+function formatTime(seconds) {
+  const mins = floor(seconds / 60);
+  const sec = floor(seconds - mins * 60);
+  return mins + "′" + String(sec).padStart(2, "0") + "″";
+}
+
+function windowResized() {
+  resizeCanvas(windowWidth, windowHeight);
+}
+
 function reset() {
   state = 0;
   timer = 0;
@@ -187,14 +197,4 @@ function reset() {
   recordSound();
   controls.style("display", "none");
   soundFile.stop();
-}
-
-function formatTime(seconds) {
-  const mins = floor(seconds / 60);
-  const sec = floor(seconds - mins * 60);
-  return mins + "′" + sec + "″";
-}
-
-function windowResized() {
-  resizeCanvas(windowWidth, windowHeight);
 }
